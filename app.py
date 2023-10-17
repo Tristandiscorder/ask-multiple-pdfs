@@ -9,7 +9,9 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.llms import HuggingFaceHub
-st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error
+
+st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error inside main()
+
 def get_pdf_text(pdf_docs):
     text = "" #init
     for pdf in pdf_docs:
@@ -18,7 +20,7 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text()
     return text
 
-"""
+
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
@@ -29,7 +31,7 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-
+"""
 def get_vectorstore(text_chunks):
     embeddings = OpenAIEmbeddings()
     # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
@@ -88,11 +90,11 @@ def main():
             with st.spinner("Processing"):
                 # get pdf text
                 raw_text = get_pdf_text(pdf_docs)
-                st.write(raw_text)
+#                st.write(raw_text)
 
                 # get the text chunks
-#                text_chunks = get_text_chunks(raw_text)
-
+                text_chunks = get_text_chunks(raw_text)
+                st.write(text_chunks)
 #                # create vector store
 #                vectorstore = get_vectorstore(text_chunks)
 #
