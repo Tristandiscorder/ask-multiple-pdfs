@@ -2,7 +2,8 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from htmlTemplates import css, bot_template, user_template
-st.set_page_config(page_title="Chat with multiple PDFs")
+st.set_page_config(page_title="Chat with multiple PDFs",
+                   page_icon=":books:")
 """from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
@@ -57,8 +58,8 @@ def main():
     load_dotenv()
 
     
-#                       page_icon=":books:")
-#    st.write(css, unsafe_allow_html=True)
+                       
+    st.write(css, unsafe_allow_html=True)
 """
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
