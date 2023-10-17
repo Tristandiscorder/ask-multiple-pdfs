@@ -39,22 +39,22 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-"""
+
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
-    memory = ConversationBufferMemory(
+    memory = ConversationBufferMemory( # init an instance of memory, other kinds(entity memory)
         memory_key='chat_history', return_messages=True)
-    conversation_chain = ConversationalRetrievalChain.from_llm(
+    conversation_chain = ConversationalRetrievalChain.from_llm( #able to chat with our context
         llm=llm,
         retriever=vectorstore.as_retriever(),
         memory=memory
     )
     return conversation_chain
-"""
+
 def handle_userinput(user_question):
-    response = st.session_state.conversation({'question': user_question})
+    response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
     st.session_state.chat_history = response['chat_history']
 
     for i, message in enumerate(st.session_state.chat_history):
@@ -68,15 +68,13 @@ def handle_userinput(user_question):
 
 def main():
     load_dotenv()
-
-    
-                       
+                     
     st.write(css, unsafe_allow_html=True)
 
-#    if "conversation" not in st.session_state:
-#        st.session_state.conversation = None
-#    if "chat_history" not in st.session_state:
-#        st.session_state.chat_history = None
+    if "conversation" not in st.session_state:#before any conversation
+        st.session_state.conversation = None
+    if "chat_history" not in st.session_state:#before any chat
+        st.session_state.chat_history = None
 
     st.header("Chat with multiple PDFs :books:")
     user_question = st.text_input("Ask a question about your documents:")
@@ -99,13 +97,13 @@ def main():
 
                 # create vector store
                 vectorstore = get_vectorstore(text_chunks)
-#
-#                # create conversation chain
-#                st.session_state.conversation = get_conversation_chain(
-#                    vectorstore)
 
+                # create conversation chain
+                st.session_state.conversation = get_conversation_chain( #generate new conversation, save st from reloading every variable by making it static
+                    vectorstore)
 
-
+#   able to use st.session_state.conversation
+    #st.session_state.conversation>>line 76~79 
 
 
 if __name__ == '__main__':
