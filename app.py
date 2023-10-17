@@ -9,7 +9,7 @@ from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from langchain.llms import HuggingFaceHub
-
+st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error
 def get_pdf_text(pdf_docs):
     text = "" #init
     for pdf in pdf_docs:
@@ -105,5 +105,5 @@ def main():
 
 
 if __name__ == '__main__':
-    st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error
+    
     main()
