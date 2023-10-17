@@ -3,14 +3,13 @@ from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from htmlTemplates import css, bot_template, user_template
 #st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:")
-"""from langchain.text_splitter import CharacterTextSplitter
+from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-
-from langchain.llms import HuggingFaceHub"""
+from langchain.llms import HuggingFaceHub
 
 def get_pdf_text(pdf_docs):
     text = "" #init
@@ -67,7 +66,7 @@ def handle_userinput(user_question):
 
 def main():
     load_dotenv()
-
+    st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:")
     
                        
     st.write(css, unsafe_allow_html=True)
@@ -91,9 +90,10 @@ def main():
                 # get pdf text
                 raw_text = get_pdf_text(pdf_docs)
                 st.write(raw_text)
-#                # get the text chunks
+                
+                # get the text chunks
 #                text_chunks = get_text_chunks(raw_text)
-#
+
 #                # create vector store
 #                vectorstore = get_vectorstore(text_chunks)
 #
