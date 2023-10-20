@@ -4,6 +4,12 @@ from PyPDF2 import PdfReader
 from htmlTemplates import css, bot_template, user_template
 
 # Langchain Core module
+#1 Agent with standard tool
+from langchain.agents import initialize_agent
+#from langchain.tools import DuckDuckGoSearchTool
+from langchain.agents import Tool
+from langchain.tools import BaseTool
+
 #1 model I/O
 from langchain.chat_models import ChatOpenAI
 #2 Data Connectivity
@@ -14,7 +20,7 @@ from langchain.vectorstores import FAISS #able to run locally
 from langchain.chains import ConversationalRetrievalChain #chain
 #4 Memory
 from langchain.memory import ConversationBufferMemory
-
+#5
 from langchain.llms import HuggingFaceHub 
 from langchain.text_splitter import CharacterTextSplitter
 st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error inside main()
@@ -43,7 +49,7 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain(vectorstore):
+def get_conversation_chain_memory_llm(vectorstore):
     llm = ChatOpenAI()
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
@@ -54,12 +60,21 @@ def get_conversation_chain(vectorstore):
         retriever=vectorstore.as_retriever(),
         memory=memory
     )
-    return conversation_chain
+    return conversation_chain, memory, llm
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
     st.session_state.chat_history = response['chat_history']
-
+    conversational_agent = initialize_agent(
+    agent='chat-conversational-react-description',
+    #tools=tools,
+    llm=st.session_state.llm,
+    verbose=True,
+    max_iterations=3,
+    early_stopping_method='generate',
+    memory=st.session_state.memory,
+    )
+    
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace(
@@ -68,9 +83,13 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-    st.write(user_question)    
+    st.write(conversational_agent(user_question))    
+    
+
 def main():
-    load_dotenv()   
+    load_dotenv()
+    
+    
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:#before any conversation
@@ -101,9 +120,13 @@ def main():
                 vectorstore = get_vectorstore(text_chunks)
 
                 # create conversation chain
-                st.session_state.conversation = get_conversation_chain( #generate new conversation, save st from reloading every variable by making it static
-                    vectorstore)
-
+                st.session_state.conversation = get_conversation_chain_memory_llm( #generate new conversation, save st from reloading every variable by making it static
+                    vectorstore)[0]
+                
+                # memory
+                st.session_state.memory = get_conversation_chain_memory_llm(vectorstore)[1]
+                #llm
+                st.session_state.llm = get_conversation_chain_memory_llm(vectorstore)[2]
 #   able to use st.session_state.conversation
     #st.session_state.conversation>>line 76~79 
 
