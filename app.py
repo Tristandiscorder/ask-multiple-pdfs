@@ -68,7 +68,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-        st.write(user_question)
+    st.write(user_question)    
 def main():
     load_dotenv()   
     st.write(css, unsafe_allow_html=True)
