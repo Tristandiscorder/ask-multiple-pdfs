@@ -67,14 +67,14 @@ def handle_userinput(user_question):
     st.session_state.chat_history = response['chat_history']
     conversational_agent = initialize_agent(
     agent='chat-conversational-react-description',
-    #tools=tools,
+    tools=[BaseTool],
     llm=st.session_state.llm,
     verbose=True,
     max_iterations=3,
     early_stopping_method='generate',
     memory=st.session_state.memory,
     )
-    
+
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace(
