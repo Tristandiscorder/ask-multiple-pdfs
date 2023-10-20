@@ -2,15 +2,21 @@ import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from htmlTemplates import css, bot_template, user_template
-from langchain.text_splitter import CharacterTextSplitter
+
+# Langchain Core module
+#1 model I/O
+from langchain.chat_models import ChatOpenAI
+#2 Data Connectivity
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 #https://instructor-embedding.github.io/ vs. openai/pricing
 from langchain.vectorstores import FAISS #able to run locally
-from langchain.chat_models import ChatOpenAI
+#3 Chain
+from langchain.chains import ConversationalRetrievalChain #chain
+#4 Memory
 from langchain.memory import ConversationBufferMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import HuggingFaceHub
 
+from langchain.llms import HuggingFaceHub 
+from langchain.text_splitter import CharacterTextSplitter
 st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error inside main()
 
 def get_pdf_text(pdf_docs):
@@ -20,7 +26,6 @@ def get_pdf_text(pdf_docs):
         for page in pdf_reader.pages:
             text += page.extract_text()
     return text
-
 
 def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
@@ -32,13 +37,11 @@ def get_text_chunks(text):
     chunks = text_splitter.split_text(text)
     return chunks
 
-
 def get_vectorstore(text_chunks):
     embeddings = OpenAIEmbeddings()
 #    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
-
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
@@ -61,14 +64,13 @@ def handle_userinput(user_question):
         if i % 2 == 0:
             st.write(user_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
+            st.write(user_question)
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-
-
+            st.write(user_question)
 def main():
-    load_dotenv()
-                     
+    load_dotenv()   
     st.write(css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:#before any conversation
