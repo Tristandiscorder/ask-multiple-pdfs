@@ -5,10 +5,10 @@ from htmlTemplates import css, bot_template, user_template
 
 # Langchain Core module
 #1 Agent with standard tool
-from langchain.agents import initialize_agent
-#from langchain.tools import DuckDuckGoSearchTool
-from langchain.agents import Tool
-from langchain.tools import BaseTool
+from langchain.agents import initialize_agent, AgentType
+from langchain.chains import LLMMathChain
+from langchain.utilities import SerpAPIWrapper
+from langchain.tools import BaseTool, StructuredTool, Tool, tool
 
 #1 model I/O
 from langchain.chat_models import ChatOpenAI
@@ -65,9 +65,20 @@ def get_conversation_chain_memory_llm(vectorstore):
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
     st.session_state.chat_history = response['chat_history']
+    search = SerpAPIWrapper()
+    llm_math_chain = LLMMathChain(llm=llm, verbose=True)
+    tools = [
+        Tool.from_function(
+            func=search.run,
+            name="Search",
+            description="useful for when you need to answer questions about current events"
+            # coroutine= ... <- you can specify an async method if desired as well
+        ),
+    ]
+    
     conversational_agent = initialize_agent(
     agent='chat-conversational-react-description',
-    tools=[BaseTool],
+    tools=tools,
     llm=st.session_state.llm,
     verbose=True,
     max_iterations=3,
