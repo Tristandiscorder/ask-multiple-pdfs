@@ -66,7 +66,7 @@ def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
     st.session_state.chat_history = response['chat_history']
     search = SerpAPIWrapper()
-    llm_math_chain = LLMMathChain(llm=llm, verbose=True)
+#    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
         Tool.from_function(
             func=search.run,
