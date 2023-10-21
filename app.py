@@ -6,7 +6,6 @@ from htmlTemplates import css, bot_template, user_template
 # Langchain Core module
 #1 Agent with standard tool
 from langchain.agents import initialize_agent, AgentType
-from langchain.agents.react.base import DocstoreExplorer
 from langchain.chains import LLMMathChain
 from langchain.utilities import SerpAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
@@ -15,7 +14,8 @@ from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.memory import ConversationBufferMemory
 
 #3 Data Connectivity
-from langchain.embeddings import OpenAIEmbeddings #HuggingFace
+from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
+#https://instructor-embedding.github.io/ vs. openai/pricing
 from langchain.vectorstores import FAISS #able to run locally
 #4 Chain
 from langchain.chains import ConversationalRetrievalChain #chain
@@ -77,21 +77,11 @@ def handle_userinput(user_question):
 #    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
         Tool(
-        name="Doc Search",
-        func=st.session_state.docstore.search,
-        description="useful for when you need to ask with search",
+        name = "Document Store",
+        func = st.session_state.llm_papers.run,
+        description = "Use it to lookup information from the document \
+                        store"
     ),
-    Tool(
-        name="Doc Lookup",
-        func=st.session_state.docstore.lookup,
-        description="useful for when you need to ask with lookup",
-    ),
-#        Tool(
-#        name = "Document Store",
-#        func = st.session_state.llm_papers.run,
-#        description = "Use it to lookup information from the document \
-#                        store"
-#    ),
         Tool.from_function(
             func=search.run,
             name="Search",
@@ -101,13 +91,13 @@ def handle_userinput(user_question):
     ]
 
     conversational_agent = initialize_agent(
-    agent=AgentType.REACT_DOCSTORE,
+    agent="chat-zero-shot-react-description",
     #agent='chat-conversational-react-description',"chat-zero-shot-react-description"
     tools=tools,
     llm=st.session_state.llm,
     verbose=True,
-    #max_iterations=3,
-    #early_stopping_method='generate',
+    max_iterations=3,
+    early_stopping_method='generate',
     memory=st.session_state.memory,
     )
 
@@ -165,8 +155,7 @@ def main():
                 st.session_state.llm = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[2]
                 #llm papers(retriever chain)
                 st.session_state.llm_papers = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[3]
-                #docstore
-                st.session_state.docstore = DocstoreExplorer(vectorstore)
+
 #   able to use st.session_state.conversation
     #st.session_state.conversation>>line 76~79 
 
