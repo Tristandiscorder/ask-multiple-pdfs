@@ -15,7 +15,7 @@ from langchain.tools import BaseTool, StructuredTool, Tool, tool
 from langchain.memory import ConversationBufferMemory
 
 #3 Data Connectivity
-from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbedding
+from langchain.embeddings import OpenAIEmbeddings #HuggingFace
 from langchain.vectorstores import FAISS #able to run locally
 #4 Chain
 from langchain.chains import ConversationalRetrievalChain #chain
