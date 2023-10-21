@@ -65,7 +65,7 @@ def get_conversation_chain_memory_llm_retriever_chain(vectorstore):
         memory=memory
     )
 
-    retriever_chain= RetrievalQA.from_chain_type(
+    retriever_chain= RetrievalQA.from_llm(
         llm=llm,
         chain_type="stuff",
         retriever=vectorstore.as_retriever())
