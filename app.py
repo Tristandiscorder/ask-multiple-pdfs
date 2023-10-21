@@ -18,11 +18,13 @@ from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS #able to run locally
 #3 Chain
 from langchain.chains import ConversationalRetrievalChain #chain
+from langchain.chains import RetrievalQA
 #4 Memory
 from langchain.memory import ConversationBufferMemory
-#5
+#5 other components
 from langchain.llms import HuggingFaceHub 
 from langchain.text_splitter import CharacterTextSplitter
+
 st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:") #error inside main()
 
 def get_pdf_text(pdf_docs):
@@ -49,7 +51,7 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
-def get_conversation_chain_memory_llm(vectorstore):
+def get_conversation_chain_memory_llm_retriever_chain(vectorstore):
     llm = ChatOpenAI()
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
@@ -60,7 +62,12 @@ def get_conversation_chain_memory_llm(vectorstore):
         retriever=vectorstore.as_retriever(),
         memory=memory
     )
-    return conversation_chain, memory, llm
+
+    retriever_chain= RetrievalQA.from_chain_type(
+        llm=llm,
+        chain_type="stuff",
+        retriever=vectorstore.as_retriever())
+    return conversation_chain, memory, llm, retriever_chain
 
 def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
@@ -68,6 +75,12 @@ def handle_userinput(user_question):
     search = SerpAPIWrapper()
 #    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
+        Tool(
+        name = "Document Store",
+        func = st.session_state.llm_papers.run,
+        description = "Use it to lookup information from the document \
+                        store"
+    ),
         Tool.from_function(
             func=search.run,
             name="Search",
@@ -94,7 +107,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-    st.write(conversational_agent.run(user_question))    
+#    st.write(conversational_agent.run(user_question))    
     
 
 def main():
@@ -131,13 +144,16 @@ def main():
                 vectorstore = get_vectorstore(text_chunks)
 
                 # create conversation chain
-                st.session_state.conversation = get_conversation_chain_memory_llm( #generate new conversation, save st from reloading every variable by making it static
+                st.session_state.conversation = get_conversation_chain_memory_llm_retriever_chain( #generate new conversation, save st from reloading every variable by making it static
                     vectorstore)[0]
                 
                 # memory
-                st.session_state.memory = get_conversation_chain_memory_llm(vectorstore)[1]
+                st.session_state.memory = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[1]
                 #llm
-                st.session_state.llm = get_conversation_chain_memory_llm(vectorstore)[2]
+                st.session_state.llm = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[2]
+                #llm papers(retriever chain)
+                st.session_state.llm_papers = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[3]
+
 #   able to use st.session_state.conversation
     #st.session_state.conversation>>line 76~79 
 
