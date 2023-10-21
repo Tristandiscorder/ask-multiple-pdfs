@@ -75,37 +75,26 @@ def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question}) #st.session_state remembers every config
     st.session_state.chat_history = response['chat_history']
     search = SerpAPIWrapper()
-#    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
 
         Tool(
-    name="Search",
-    func=st.session_state.docstore.search,
-    description="Search for a term in the docstore.",
-  ),
-  Tool(
-    name="Lookup",
-    func=st.session_state.docstore.lookup,
-    description="Lookup a term in the docstore.",
-  ),
-#        Tool(
-#        name = "Document Store",
-#        func = st.session_state.llm_papers.run,
-#        description = "Use it to lookup information from the user uploaded document \
-#                        Use it more than the normal search if the question is relevant to the document",
-##        handle_tool_error=True
-#    ),
-        Tool.from_function(
-            func=search.run,
-            name="Search",
-            description="useful for when you need to answer questions about current events"
-            # coroutine= ... <- you can specify an async method if desired as well
-        ),
+        name = "Document Store",
+        func = st.session_state.llm_papers.run,
+        description = "Use it to lookup information from the user uploaded document \
+                        Use it more than the normal search if the question is relevant to the document",
+#        handle_tool_error=True
+    ),
+#        Tool.from_function(
+#            func=search.run,
+#            name="Search",
+#            description="useful for when you need to answer questions about current events"
+#            # coroutine= ... <- you can specify an async method if desired as well
+#        ),
     ]
 
     conversational_agent = initialize_agent(
-    agent="react-docstore",
-    #agent='chat-conversational-react-description',
+#    agent="react-docstore",
+    agent='chat-conversational-react-description',
     #agent='chat-conversational-react-description',"chat-zero-shot-react-description", "structured-chat-zero-shot-react-description"
     tools=tools,
     llm=st.session_state.llm,
@@ -169,12 +158,8 @@ def main():
                 st.session_state.llm = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[2]
                 #llm papers(retriever chain)
                 st.session_state.llm_papers = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[3]
-
-                st.session_state.docstore=DocstoreExplorer(text_chunks)
-
-#   able to use st.session_state.conversation
-    #st.session_state.conversation>>line 76~79 
-
+                #   able to use st.session_state.conversation
+                #st.session_state.conversation>>line 76~79 
 
 if __name__ == '__main__':
     
