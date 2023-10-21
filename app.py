@@ -79,8 +79,8 @@ def handle_userinput(user_question):
         Tool(
         name = "Document Store",
         func = st.session_state.llm_papers.run,
-        description = "Use it to lookup information from the document \
-                        store"
+        description = "Use it to lookup information from the user uploaded document \
+                        Use it more than the normal search if the question is relevant to the document"
     ),
         Tool.from_function(
             func=search.run,
