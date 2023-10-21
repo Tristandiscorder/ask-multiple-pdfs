@@ -79,7 +79,7 @@ def handle_userinput(user_question):
 
         Tool(
         name = "Document Store",
-        func = response,#st.session_state.llm_papers.run,
+        func = st.session_state.llm_papers.run,
         description = "Use it to lookup information from the user uploaded document \
                         Use it more than the normal search if the question is relevant to the document",
 #        handle_tool_error=True
