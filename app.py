@@ -94,8 +94,8 @@ def handle_userinput(user_question):
 
     conversational_agent = initialize_agent(
     #agent="react-docstore",
-    agent="structured-chat-zero-shot-react-description",
-    #agent='chat-conversational-react-description',"chat-zero-shot-react-description"
+    agent='chat-conversational-react-description',
+    #agent='chat-conversational-react-description',"chat-zero-shot-react-description", "structured-chat-zero-shot-react-description"
     tools=tools,
     llm=st.session_state.llm,
     verbose=True,
