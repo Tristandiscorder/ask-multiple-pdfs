@@ -82,7 +82,7 @@ def handle_userinput(user_question):
         func = st.session_state.llm_papers.run,
         description = "Use it to lookup information from the user uploaded document \
                         Use it more than the normal search if the question is relevant to the document",
-        handle_tool_error=True
+#        handle_tool_error=True
     ),
         Tool.from_function(
             func=search.run,
