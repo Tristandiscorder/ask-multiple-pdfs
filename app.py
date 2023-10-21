@@ -75,7 +75,7 @@ def handle_userinput(user_question):
     search = SerpAPIWrapper()
 #    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
-        Tool.from_function(
+        Tool(
         name = "Document Store",
         func = st.session_state.llm_papers.run,
         description = "Use it to lookup information from the document \
