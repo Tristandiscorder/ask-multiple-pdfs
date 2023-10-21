@@ -90,7 +90,7 @@ def handle_userinput(user_question):
     ]
 
     conversational_agent = initialize_agent(
-    agent='openai-functions',
+    agent="chat-zero-shot-react-description",
     #agent='chat-conversational-react-description',"chat-zero-shot-react-description"
     tools=tools,
     llm=st.session_state.llm,
