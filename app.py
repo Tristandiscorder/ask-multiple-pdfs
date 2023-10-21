@@ -107,7 +107,7 @@ def handle_userinput(user_question):
         else:
             st.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
-#    st.write(conversational_agent.run(user_question))    
+    st.write(conversational_agent.run(user_question))    
     
 
 def main():
