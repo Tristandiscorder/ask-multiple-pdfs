@@ -9,7 +9,7 @@ from langchain.agents import initialize_agent, AgentType
 from langchain.chains import LLMMathChain
 from langchain.utilities import SerpAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
-#from langchain.tools.base import ToolException
+from langchain.agents.react.base import DocstoreExplorer
 
 #2 Memory
 from langchain.memory import ConversationBufferMemory
@@ -77,13 +77,24 @@ def handle_userinput(user_question):
     search = SerpAPIWrapper()
 #    llm_math_chain = LLMMathChain(llm=st.session_state.llm, verbose=True)
     tools = [
+
         Tool(
-        name = "Document Store",
-        func = st.session_state.llm_papers.run,
-        description = "Use it to lookup information from the user uploaded document \
-                        Use it more than the normal search if the question is relevant to the document",
-#        handle_tool_error=True
-    ),
+    name="Search",
+    func=st.session_state.docstore.search,
+    description="Search for a term in the docstore.",
+  ),
+  Tool(
+    name="Lookup",
+    func=st.session_state.docstore.lookup,
+    description="Lookup a term in the docstore.",
+  ),
+#        Tool(
+#        name = "Document Store",
+#        func = st.session_state.llm_papers.run,
+#        description = "Use it to lookup information from the user uploaded document \
+#                        Use it more than the normal search if the question is relevant to the document",
+##        handle_tool_error=True
+#    ),
         Tool.from_function(
             func=search.run,
             name="Search",
@@ -93,8 +104,8 @@ def handle_userinput(user_question):
     ]
 
     conversational_agent = initialize_agent(
-    #agent="react-docstore",
-    agent='chat-conversational-react-description',
+    agent="react-docstore",
+    #agent='chat-conversational-react-description',
     #agent='chat-conversational-react-description',"chat-zero-shot-react-description", "structured-chat-zero-shot-react-description"
     tools=tools,
     llm=st.session_state.llm,
@@ -158,6 +169,8 @@ def main():
                 st.session_state.llm = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[2]
                 #llm papers(retriever chain)
                 st.session_state.llm_papers = get_conversation_chain_memory_llm_retriever_chain(vectorstore)[3]
+
+                st.session_state.docstore=DocstoreExplorer(text_chunks)
 
 #   able to use st.session_state.conversation
     #st.session_state.conversation>>line 76~79 
