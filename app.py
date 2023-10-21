@@ -9,7 +9,7 @@ from langchain.agents import initialize_agent, AgentType
 from langchain.chains import LLMMathChain
 from langchain.utilities import SerpAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
-from langchain.tools.base import ToolException
+#from langchain.tools.base import ToolException
 
 #2 Memory
 from langchain.memory import ConversationBufferMemory
@@ -125,7 +125,7 @@ def main():
     if "chat_history" not in st.session_state:#before any chat
         st.session_state.chat_history = None
 
-    st.header("2024 졸업 중간 발표 관련 :graduation:")
+    st.header("2024 졸업 중간 발표 관련 :books:")
     user_question = st.text_input("Ask a question about your documents:")
     if user_question:
         handle_userinput(user_question)
