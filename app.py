@@ -100,8 +100,8 @@ def handle_userinput(user_question):
     llm=st.session_state.llm,
     verbose=True,
     handle_parsing_errors=True,
-    max_iterations=3,
-    early_stopping_method='generate',
+    #max_iterations=3,
+    #early_stopping_method='generate',
     memory=st.session_state.memory,
     )
 
