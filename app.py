@@ -9,6 +9,7 @@ from langchain.agents import initialize_agent, AgentType
 from langchain.chains import LLMMathChain
 from langchain.utilities import SerpAPIWrapper
 from langchain.tools import BaseTool, StructuredTool, Tool, tool
+from langchain.tools.base import ToolException
 
 #2 Memory
 from langchain.memory import ConversationBufferMemory
@@ -80,7 +81,8 @@ def handle_userinput(user_question):
         name = "Document Store",
         func = st.session_state.llm_papers.run,
         description = "Use it to lookup information from the user uploaded document \
-                        Use it more than the normal search if the question is relevant to the document"
+                        Use it more than the normal search if the question is relevant to the document",
+        handle_tool_error=True
     ),
         Tool.from_function(
             func=search.run,
